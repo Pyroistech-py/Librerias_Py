@@ -75,7 +75,6 @@ EJEMPLO DE USO DE LA LIBRERIA
 * Descomentar para probar
 """
 # #########
-
 # from Lector_BBDD import Lector_BBDD
 
 # # Carga de datos
