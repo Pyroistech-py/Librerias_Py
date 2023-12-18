@@ -11,7 +11,6 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 class Lector_BBDD:
     def __init__(self, path_bd, wl_column, data_column, selected_columns=None):
         # Constructor de la clase. Inicializa los atributos de la instancia con los valores proporcionados.
