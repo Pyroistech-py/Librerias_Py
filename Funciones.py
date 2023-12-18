@@ -9,8 +9,12 @@ import numpy as np
 import pandas as pd
 import unicodedata
 
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+
 from scipy.signal import savgol_filter
 from scipy.signal import detrend
+
 
 class funciones:
     
@@ -52,3 +56,59 @@ class funciones:
         sg = savgol_filter(df,w, p, deriv=d)
         df_sg=pd.DataFrame(sg, index=df.index, columns=df.columns)
         return df_sg
+
+    def plot_graphs(
+            df,
+            info_df, 
+            columna_datos,
+            grid_size=(1, 1), 
+            position=(0, 0), 
+            fig=None, 
+            figsize=(12, 8), 
+            x_axis_ticks=None,
+            cmap_selected=plt.cm.tab10, 
+            title=None,
+            x_label=None,
+            y_label=None,
+            active_grid=True,
+            show_colorbar=False,  # Colorbar no se usará para datos tipo str
+            show_legend=True,
+            legend_loc="best",
+            title_legend=None
+            ):
+
+        if fig is None:
+            fig = plt.figure(figsize=figsize)
+        ax = plt.subplot2grid(grid_size, position, fig=fig)
+
+        if x_axis_ticks is None:
+            x_axis_ticks = df.columns
+
+        # Crear un mapeo de colores para valores únicos de tipo str
+        unique_str_values = info_df[columna_datos].unique()
+        color_map = {value: cmap_selected(i) for i, value in enumerate(unique_str_values)}
+
+        for index, row in df.iterrows():
+            str_value = info_df.loc[index, columna_datos]
+            color = color_map.get(str_value, "black")  # Color por defecto si no se encuentra en el mapeo
+
+            ax.plot(x_axis_ticks, row, color=color)
+
+        ax.set_title(title)
+        ax.set_xlabel(x_label)
+        ax.set_ylabel(y_label)
+        ax.grid(active_grid)
+        
+        if show_legend:
+            handles = [mpatches.Patch(color=color_map[value], label=value) for value in unique_str_values]
+            ax.legend(handles=handles, title=title_legend, loc=legend_loc)
+
+        return fig
+
+'''
+uso de plot_graph
+fig = plot_graphs(df, info_df, columna, grid_size=(2,2), position=(0,1), fig=None, show_colorbar=False, show_legend=True)
+fig = plot_graphs(df, info_df, columna2, grid_size=(2,2), position=(1, 0), show_colorbar=False, show_legend=True)
+plt.tight_layout()
+plt.show()
+'''
