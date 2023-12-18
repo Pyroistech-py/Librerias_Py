@@ -76,10 +76,10 @@ EJEMPLO DE USO DE LA LIBRERIA
 """
 # #########
 
-# from Lector_BBDD_AGROFLUID import Lector_BBDD
+# from Lector_BBDD import Lector_BBDD
 
 # # Carga de datos
-# lector = Lector_BBDD('DATOS/BBDD_AGROFLUID_005.txt', 'WL_VIS', 'DATA_VIS', ['ACEITE', 'CONCENTRADO'])
+# lector = Lector_BBDD(path_BBDD.txt', 'WL_VIS', 'DATA_VIS', ['ACEITE', 'CONCENTRADO'])
 # df = lector.df_bbdd
 
 # # Obtener las columnas que hay en el dataset
