@@ -12,22 +12,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class Lector_BBDD:
-    def __init__(self, path_bd, wl_column, data_column, selected_columns=None):
-        # Constructor de la clase. Inicializa los atributos de la instancia con los valores proporcionados.
-        # path_bd: Ruta al archivo de base de datos.
-        # wl_column: Nombre de la columna que contiene datos de longitud de onda.
-        # data_column: Nombre de la columna que contiene los datos a ser procesados.
-        # selected_columns: Lista opcional de columnas adicionales a seleccionar.
+    # Constructor de la clase. Inicializa los atributos de la instancia con los valores proporcionados.
+    # path_bd: Ruta al archivo de base de datos.
+    # wl_column: Nombre de la columna que contiene datos de longitud de onda.
+    # data_column: Nombre de la columna que contiene los datos a ser procesados.
+    # selected_columns: Lista opcional de columnas adicionales a seleccionar.
+        
+        
+    def leer_datos(self, path_bd, wl_column, data_column, selected_columns=None):
+        # Método para leer y procesar los datos de la base de datos.
         self.path_bd = path_bd
         self.wl_column = wl_column
         self.data_column = data_column
         self.selected_columns = selected_columns
-        
-        self.df_bbdd, self.df_info = self.leer_datos()
-        
-    def leer_datos(self):
-        # Método para leer y procesar los datos de la base de datos.
-        
         # Lee el archivo CSV usando pandas y separa los campos por tabulaciones.
         df_bd = pd.read_csv(self.path_bd,  sep='\t')    
         
@@ -59,7 +56,8 @@ class Lector_BBDD:
         # Devuelve dos DataFrames: uno con los datos procesados y otro con información adicional si está disponible.
         return df_bbdd, df_info
     
-    def obtener_nombres_columnas(self):
+    def obtener_nombres_columnas(self,path_bd):
+        self.path_bd = path_bd
         # Método para obtener los nombres de las columnas del archivo de base de datos.
 
         # Lee solamente los encabezados del archivo.
