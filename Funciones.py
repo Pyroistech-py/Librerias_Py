@@ -86,7 +86,11 @@ class funciones:
                     x_axis_ticks = df.columns
         
                 # Crear un mapeo de colores para valores únicos de tipo str
-                unique_str_values = info_df[columna_datos].unique()
+                
+                info_df[columna_datos] = info_df[columna_datos].astype(str)
+    
+                
+                unique_str_values = sorted(info_df[columna_datos].unique(), key=lambda x: self.natural_keys(x))
                 color_map = {value: cmap_selected(i) for i, value in enumerate(unique_str_values)}
         
                 for index, row in df.iterrows():
@@ -108,9 +112,24 @@ class funciones:
         
             except Exception as e:
                 # Aquí puedes manejar el error como prefieras
-                print(f"Ha ocurrido un error al intentar graficar: {e}")
+                print(f"Ha ocurrido un error: {e}")
+                traceback.print_exc()
                 # O devolver un mensaje de error
                 # return f"Error en la graficación: {e}"
+    
+            return fig
+    
+        def atoi(self, text):
+            return int(text) if text.isdigit() else text
+        
+        def natural_keys(self, text):
+            '''
+            Algoritmo para ordenar strings que contienen números de manera natural
+            '''
+            if isinstance(text, bytes):
+                text = text.decode('utf-8')  # Decodificar de bytes a str
+    
+            return [self.atoi(c) for c in re.split(r'(\d+)', text)]
 
 '''
 uso de plot_graph
