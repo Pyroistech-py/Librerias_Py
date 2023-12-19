@@ -15,6 +15,9 @@ import matplotlib.patches as mpatches
 from scipy.signal import savgol_filter
 from scipy.signal import detrend
 
+import traceback
+import re
+
 
 class funciones:
     
@@ -119,10 +122,10 @@ class funciones:
     
             return fig
     
-        def atoi(self, text):
+    def atoi(self, text):
             return int(text) if text.isdigit() else text
         
-        def natural_keys(self, text):
+    def natural_keys(self, text):
             '''
             Algoritmo para ordenar strings que contienen números de manera natural
             '''
