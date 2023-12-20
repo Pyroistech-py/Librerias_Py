@@ -10,6 +10,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+import pyarrow.parquet as pq
 
 class Lector_BBDD:
     # Constructor de la clase. Inicializa los atributos de la instancia con los valores proporcionados.
@@ -65,6 +66,26 @@ class Lector_BBDD:
 
         # Devuelve la lista de nombres de columnas.
         return df_temp.columns.tolist()
+    
+
+    #Lector para parquet
+    def leer_datos_pq(self, path_bd, wl_column, data_column, selected_columns=None):
+        if selected_columns==None:
+            df_info=pd.DataFrame()
+        else:
+            df_info=pd.read_parquet(path_bd, columns=selected_columns) 
+        wl=[row[0] for index, row in pd.read_parquet(path_bd, columns=[wl_column]).iterrows()][0]
+        data = [row[0] for index, row in pd.read_parquet(path_bd, columns=[data_column]).iterrows()]
+        df_bbdd= pd.DataFrame(data, columns=wl)
+        
+        return df_bbdd, df_info
+    
+    def obtener_nombres_columnas_pq(self, path_bd):
+        parquet_file = pq.ParquetFile(path_bd)
+        column_names=parquet_file.metadata.schema.names
+        return column_names
+
+
 
 
 """
