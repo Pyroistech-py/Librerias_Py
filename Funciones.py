@@ -77,7 +77,8 @@ class funciones:
                 show_colorbar=False,  # Colorbar no se usará para datos tipo str
                 show_legend=True,
                 legend_loc="best",
-                title_legend=None
+                title_legend=None,
+                y_min=None, y_max=None,
                 ):
         
             try:
@@ -101,7 +102,15 @@ class funciones:
                     color = color_map.get(str_value, "black")  # Color por defecto si no se encuentra en el mapeo
         
                     ax.plot(x_axis_ticks, row, color=color)
-        
+         
+                # Establece los límites del eje y si se proporcionan y_min y/o y_max
+                if y_min is not None and y_max is not None:
+                    ax.set_ylim(y_min, y_max)
+                elif y_min is not None:
+                    ax.set_ylim(bottom=y_min)
+                elif y_max is not None:
+                    ax.set_ylim(top=y_max)
+         
                 ax.set_title(title)
                 ax.set_xlabel(x_label)
                 ax.set_ylabel(y_label)
