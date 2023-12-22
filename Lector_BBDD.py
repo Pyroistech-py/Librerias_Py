@@ -69,16 +69,34 @@ class Lector_BBDD:
     
 
     #Lector para parquet
+
     def leer_datos_pq(self, path_bd, wl_column, data_column, selected_columns=None):
-        if selected_columns==None:
-            df_info=pd.DataFrame()
-        else:
-            df_info=pd.read_parquet(path_bd, columns=selected_columns) 
-        wl=[row[0] for index, row in pd.read_parquet(path_bd, columns=[wl_column]).iterrows()][0]
-        data = [row[0] for index, row in pd.read_parquet(path_bd, columns=[data_column]).iterrows()]
-        df_bbdd= pd.DataFrame(data, columns=wl)
+            # Leer las columnas seleccionadas si se especifican
+            if selected_columns is not None:
+                df_info = pd.read_parquet(path_bd, columns=selected_columns)
         
-        return df_bbdd, df_info
+            # Leer la columna de longitudes de onda
+            wl = pd.read_parquet(path_bd, columns=[wl_column]).iloc[0, 0]
+        
+            # Leer los datos
+            data_series = pd.read_parquet(path_bd, columns=[data_column])[data_column]
+        
+            # Procesar cada elemento en data_series
+            processed_data = []
+            for item in data_series:
+                if item is None:
+                    # Opción 1: Reemplazar None con una lista de NaN
+                    processed_data.append([np.nan] * len(wl))
+                    # Opción 2: Omitir las filas con None (descomentar la siguiente línea y comentar la anterior)
+                    # continue
+                else:
+                    processed_data.append(item if pd.api.types.is_list_like(item) else [item])
+        
+            # Convertir la lista procesada a un DataFrame
+            data_df = pd.DataFrame(processed_data, columns=wl)
+        
+            return data_df, df_info
+
     
     def obtener_nombres_columnas_pq(self, path_bd):
         parquet_file = pq.ParquetFile(path_bd)
