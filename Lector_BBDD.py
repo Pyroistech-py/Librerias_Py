@@ -11,6 +11,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pyarrow.parquet as pq
+from sqlalchemy import create_engine
 
 class Lector_BBDD:
     # Constructor de la clase. Inicializa los atributos de la instancia con los valores proporcionados.
@@ -102,6 +103,63 @@ class Lector_BBDD:
         parquet_file = pq.ParquetFile(path_bd)
         column_names=parquet_file.metadata.schema.names
         return column_names
+
+class Lector_SQL():
+    @staticmethod
+    def create_engine_db(path):
+        """ Crea y devuelve el motor de base de datos """
+        return create_engine('sqlite:///' + path)
+    
+    @staticmethod
+    def load_wl(engine, configuracion):
+        """ Carga la configuración de la base de datos """
+        consulta = """
+            SELECT WL
+            FROM DB_CONFIGURACION
+            WHERE configuracion = :configuracion
+        """
+        if not configuracion:
+            return None
+        else:
+            wl_sql = pd.read_sql_query(consulta, con=engine, params={'configuracion': configuracion}).iloc[0, 0]
+            return np.array([float(num) for num in wl_sql.strip("[]").split()])
+
+    @staticmethod
+    def bytes_to_floats_vectorized(byte_data):
+        # Primero convertimos los datos de bytes a un array de numpy
+        byte_array = np.frombuffer(byte_data, dtype=np.uint8)
+        
+        # Calculamos cuántos números de doble precisión contiene el array
+        num_floats = byte_array.size // 8
+        
+        # Reinterpretamos el array de bytes como un array de doubles
+        return byte_array.view(np.float64)[:num_floats]
+
+    @staticmethod
+    def deserializar(df, wl):
+        """ Transforma los datos de la columna 'DATOS' """
+        data_arrays = np.vstack(df['DATOS'].map(Lector_SQL.bytes_to_floats_vectorized).tolist())
+        return pd.DataFrame(data_arrays, columns=wl)
+    
+    @staticmethod
+    def leer_sql(path, tabla, configuracion=None, consulta=None, serializado=False, unido=False):
+        engine = Lector_SQL.create_engine_db(path)
+        df = pd.read_sql_table(tabla, con=engine) if consulta is None else pd.read_sql_query(consulta, con=engine)
+        
+        if 'DATOS' in tabla:
+            if not serializado:
+                wl = Lector_SQL.load_wl(engine, configuracion) if configuracion else None
+                
+                df_datos = Lector_SQL.deserializar(df, wl)
+                df_info = df.drop('DATOS', axis=1)
+                
+                return pd.concat([df_info, df_datos], axis=1) if unido else (df_datos, df_info)
+            else:
+                df_info = df.drop('DATOS', axis=1)
+                df_datos = df['DATOS']
+                return df if unido else (df_datos, df_info)
+        else:
+            return df
 
 
 
