@@ -51,6 +51,7 @@ class Lector_SQL:
     def leer_sql_info(path, tabla):
         engine = create_engine('sqlite:///' + path)
         return pd.read_sql_table(tabla, con=engine) 
+    
     @staticmethod
     def tablas_sql(path):
         # Crear el engine
@@ -99,15 +100,17 @@ class Lector_SQL:
 # tabla = 'DATOS_DISOLUCIONES'
 # configuracion = 'CONFIG_0'
 
-# #Ejemplos de consultas
+# #Consulta = manera de filtrar datos en sql (tb se pueden cargar las tablas completas y filtrar el df en python)
+# #Ejemplo de consulta: filtrado por adulterante
 # adulterante = 'GIRASOL' #En mayusculas
 # consulta = f"""
 #     SELECT d.*
 #     FROM {tabla} d
 #     INNER JOIN INFO i ON d.PY_ID = i.PY_ID
 #     WHERE UPPER(i.ADULTERANTE) LIKE '%{adulterante}%'
-
 # """
+
+# #Ejemplo de consulta: filtrado por adulterante y concentracion de estigmastadienos
 # estigs_value=0.2
 # consulta2=f"""
 #     SELECT d.*
